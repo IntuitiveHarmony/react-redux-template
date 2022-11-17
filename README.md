@@ -1,70 +1,126 @@
-# Getting Started with Create React App
+# React Redux Template
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This goes through the set up of Redux toolkit within a React app and follow
 
-## Available Scripts
+## Create React App
 
-In the project directory, you can run:
+```
+npx create-react-app react-redux-template
+```
 
-### `npm start`
+## Install redux and redux toolkit
+In the root dir:
+`npm i @reduxjs/toolkit react-redux`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Set up the store
+>This stores the state of the entire app
 
-### `npm test`
+In the src directory add a folder called app
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+In the app directory create a file called store.js
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Inside store.js
+1. Add
+```javaScript
+import { configureStore } from "@reduxjs/toolkit";
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+export const store = configureStore({
+    reducer: {
+       // This is where we will put our reducers later
+    })
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+In index.js:
+1. Import the store that we just created
+2. Import Provider from react-redux
+```javaScript
+import { store } from './app/store';
+import { Provider } from 'react-redux';
+```
+3. Wrap the App with the Provider and pass in the store
+```javaScript
+<React.StrictMode>
+  <Provider store={store}>
+    <App />
+  </Provider>
+</React.StrictMode>
+```
+### Creating a slice
+> This is where we define we will 'slice' the state objects into multiple slices of state and define reducer logic 
 
-### `npm run eject`
+In the src directory add a folder called features
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+In the features folder add a folder that will contain your slice.  Name it someting that makes sense semanticly (what does it do?)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Add a file that is this folder name plus slice.js
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Examples:
+- [ ] /counter/counterSlice.js
+- [x] /sequencer/sequencerSlice.js
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+In sequencerSlice.js
+1. Import createSlice from @reduxjs/toolkit
+```javaScript
+import { createSlice } from '@reduxjs/toolkit'
+```
+2. Set an intitial state
+```javaScript
+const initialState = {
+  row1: [null, null, null, null, null, null, null, null],
+  row2: [null, null, null, null, null, null, null, null],
+  row3: [null, null, null, null, null, null, null, null],
+  row4: [null, null, null, null, null, null, null, null],
+  row5: [null, null, null, null, null, null, null, null],
+  row6: [null, null, null, null, null, null, null, null],
+  row7: [null, null, null, null, null, null, null, null]
+}
+```
+3. Define and export the slice
+```javaScript
+ export const sequencerSlice = createSlice({
+    name: 'sequencer',
+    initialState,
+    reducers: {
+        // these are the actions
+        activateRow1: (state) => {
+        state.row1 
+      }
+    }
+ })
+```
 
-## Learn More
+4. Export actions
+```javaScript
+export const { activateRow1 } = counterSlice.actions;
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+5. Export reducer
+```javaScript
+export default sequencerSlice.reducer;
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Import reducer to the store
+In store.js 
+1. Import
+```javaScript
+import sequencerReducer from '../features/sequencer/sequencerSlice'
+```
+2. Add reducer to the store in our place holder from eairler
+```javaScript
+export const store = configureStore({
+    reducer: {
+       // This is where we will put our reducers later
+       sequencer: sequencerReducer
+    })
+```
 
-### Code Splitting
+### Import Actions, useSelector and use dispatch
+Make a new component in the features folder called Sequences.js
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+In Sequences.js
+```javaScript
+import { useSelector, useDispatch } from 'react-redux';
+import { activateRow1 } from './sequencerSlice'
+```
